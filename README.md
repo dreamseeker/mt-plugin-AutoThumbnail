@@ -8,7 +8,7 @@ This is a plugin that automatically generates thumbnail images for Movable Type.
 
 ## Installation
 
-To install JP Address, follow these steps:
+To install AutoThumbnail, follow these steps:
 
 1. Download & unzip the file
 2. place the `mt-static/plugins/AutoThumbnail` directory into your `/path/to/mt/mt-static` directory
