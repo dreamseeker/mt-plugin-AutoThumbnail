@@ -9,7 +9,9 @@ use vars qw( %Lexicon );
     'Config Option1'            => 'Thumbnail Image Size 1',
     'Config Option2'            => 'Thumbnail Image Size 2',
     'Config Option3'            => 'Thumbnail Image Size 3',
-    'Config Option4'            => 'Suffix of Thumbnail File',
+    'Config Option4'            => 'Thumbnail Image Size 4',
+    'Config Option5'            => 'Thumbnail Image Size 5',
+    'Config Suffix'             => 'Suffix of Thumbnail File',
     'Config Description Blog'   => 'Resize Type(Width or Height), Maximam Size(Int), Forces Square(1 or 0)',
     'Config Description System' => 'If you want to decide FileName Suffix. Enter Strings.',
 );

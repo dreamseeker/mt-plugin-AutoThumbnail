@@ -14,7 +14,7 @@ my $plugin = MT::Plugin::AutoThumbnail->new({
     key         =>  __PACKAGE__,
     name        => 'AutoThumbnail',
     l10n_class  => 'AutoThumbnail::L10N',
-    version     => '0.1.2',
+    version     => '0.2.0',
     description => '<__trans phrase="Description">',
     author_name => 'dreamseeker',
     author_link => 'http://d-s-b.jp/',
@@ -27,7 +27,9 @@ my $plugin = MT::Plugin::AutoThumbnail->new({
         ['default_option1', { Default => 'Width, 400, 0' }],
         ['default_option2', { Default => '' }],
         ['default_option3', { Default => '' }],
-        ['default_option4', { Default => '', Scope => 'system' }],
+        ['default_option4', { Default => '' }],
+        ['default_option5', { Default => '' }],
+        ['setting_suffix', { Default => '', Scope => 'system' }],
     ]),
 });
 
@@ -64,11 +66,11 @@ sub _cb_cms_post_save_asset {
         my $file_ext  = $obj->file_ext;
 
         my @options = ();
-        for( my $i=1; $i<=3; $i++ ) {
+        for( my $i=1; $i<=5; $i++ ) {
             my $option = $plugin->get_config_value('default_option'.$i, 'blog:'.$blog_id);
             if($option) { @options[$i-1] = $option; }
         }
-        my $alt_suffix = $plugin->get_config_value('default_option4', 'system');
+        my $alt_suffix = $plugin->get_config_value('setting_suffix', 'system');
 
         for( my $i=0; $i<=$#options; $i++ ) {
             create_thumbnail_img( $i, $site_path, $site_url, $file_path, $file_name, $file_ext, @options[$i], $alt_suffix );
@@ -80,10 +82,11 @@ sub _cb_tp_header {
     my ( $cb, $app, $param, $tmpl ) = @_;
     my $blog_id = $app->param('blog_id');
 
-    for( my $i=1; $i<=4; $i++ ) {
-        if($i == 4) { $blog_id = 0; }
+    for( my $i=1; $i<=5; $i++ ) {
         $$param{ 'default_option'.$i } = $plugin->get_config_value('default_option'.$i, 'blog:'.$blog_id);
     }
+
+    $$param{ 'setting_suffix' } = $plugin->get_config_value('setting_suffix', 'system');
 1;
 }
 
@@ -91,19 +94,26 @@ sub _cb_tp_header {
 
 sub create_thumbnail_img {
     my ($i, $site_path, $site_url, $file_path, $file_name, $file_ext, $options, $suffix_str) = @_;
-    my $recent_cnt = $i + 1;
-    my $img_path   = $file_path;
-    my @options    = split(/,/, $options);
-    my $thumb_type = @options[0];
-    my $max_size   = @options[1];
-    my $square     = @options[2];
+    my $recent_cnt   = $i + 1;
+    my $img_path     = $file_path;
+    my @options      = split(/,/, $options);
+    my $thumb_type   = @options[0];
+    my $max_size     = @options[1];
+    my $square       = @options[2];
+    my $jpeg_quality = @options[3] ? @options[3] : MT->config->ImageQualityJpeg;
+    my $png_quality  = @options[4] ? @options[4] : MT->config->ImageQualityPng;
 
     if(!( -f $img_path ) && ( -f url_decode($img_path) )) {
         $img_path = url_decode($img_path);
     }
 
     my ($w, $h) = imgsize($img_path);
-    my $img = new MT::Image(Filename => $img_path);
+    my $img
+        = new MT::Image(
+            Filename    => $img_path,
+            JpegQuality => $jpeg_quality,
+            PngQuality  => $png_quality
+        );
 
     if ( (($thumb_type eq "Width") && ($w > $max_size)) || (($thumb_type eq "Height") && ($h > $max_size)) ) {
         if ($square == 1) {
