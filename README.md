@@ -38,7 +38,7 @@ In the blog plug-in settings, you can specify the five items to raise then separ
   <tr>
     <td>Resize criteria</td>
     <td>String</td>
-    <td><tt>Widtd</tt> or <tt>Height</tt></td>
+    <td><tt>Width</tt> or <tt>Height</tt></td>
     <td></td>
   </tr>
   <tr>
